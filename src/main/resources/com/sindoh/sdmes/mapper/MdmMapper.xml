@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sindoh.sdmes.mapper.MdmMapper">
+
+	<parameterMap id="insertRoutingDetailsParameters" type="map">
+		<parameter property="routingid"  	         jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="operationid" 	         jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="userid"	  	         jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+	</parameterMap>
+	
+	<update id="insertRoutingDetails" statementType="CALLABLE"  parameterMap="insertRoutingDetailsParameters">
+	<![CDATA[
+		{call p_insert_routing_details(?, null, ?, ?)}
+	]]>
+	</update>
+	
+	<select id="itemSelectList" resultType="map" parameterType="map">
+	<![CDATA[select item_id, 
+	                item_number, 
+	                item_description, 
+	                item_type, 
+	                status
+			   from mtl_item_masters m
+			  where item_description like #{name, jdbcType=VARCHAR}||'%'
+				 or item_number like #{name, jdbcType=VARCHAR}||'%'
+	]]>
+	</select>
+	
+	<parameterMap id="updateRoutingDetailsParameters" type="map">
+		<parameter property="routingid"  	         jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="operationid" 	         jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="seq"		 	         jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="required" 	         	 jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="userid"	  	         jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="partno" 		         jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="indicator" 	         jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="location" 	       		 jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="length" 	         	 jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+	</parameterMap>
+	
+	<update id="updateRoutingDetails" statementType="CALLABLE"  parameterMap="updateRoutingDetailsParameters">
+	<![CDATA[
+		{call p_update_routing_details(?, ?, ?, ?, null::timestamp, now()::timestamp, ?, ?, ?, ?, ?)}
+	]]>
+	</update>
+
+    <!-- 파일 생성 -->
+	<parameterMap id="deleteRoutingDetailsParameters" type="map">
+		<parameter property="routingid"  	         jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="operationid" 	         jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="operation_seq" 	         jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+	</parameterMap>
+	
+	<update id="deleteRoutingDetails" statementType="CALLABLE"  parameterMap="deleteRoutingDetailsParameters">
+	<![CDATA[
+		{call p_delete_routing_details(?, ?, ?)}
+	]]>
+	</update>
+
+   <select id="getItemMasters" parameterType="map" resultType="map" >    
+      <![CDATA[
+	   SELECT item_id,
+			item_number,
+			item_description,
+			product_family
+		FROM mtl_item_masters
+		WHERE item_number like '%' || #{itemNumber} || '%'
+		and mfg_site_id = #{site}
+      ]]>
+   </select>       
+   
+   <select id="getRoutings" parameterType="int" resultType="map" >    
+    <![CDATA[
+      SELECT r.assy_item_number,
+      		r.routing_desc
+	    FROM mtl_routing_details d, mtl_routings r
+	   WHERE d.routing_id = r.routing_id
+		AND d.operation_id = #{itemId}
+	]]>      
+   </select>
+   
+   <select id="getOperations" resultType="map">    
+   	<![CDATA[
+      SELECT operation_id id,
+      		operation_type optype,
+      		operation_desc opdesc
+		FROM mtl_operations mo
+		where (#{operationType} like '' or operation_type = #{operationType}) 
+		and (#{operationDesc} like '' or upper(operation_desc) like '%'||upper(#{operationDesc})||'%')
+		and (#{itemNumber} like '' or 
+		operation_id in (select operation_id from mtl_operation_parts mop
+		where mop.item_number like '%' || #{itemNumber} || '%'))
+		and operation_id not in 
+			(select operation_id 
+			   from mtl_routing_details mrd,
+			        mtl_routings mr 
+			  where mr.routing_id = mrd.routing_id 
+			    and mr.assy_item_number = #{assyItemNumber}) 
+      
+	]]>      
+   </select>
+   
+   <select id="getOperationParts" parameterType="int" resultType="map" >    
+   	<![CDATA[
+      select operation_id opid,
+			item_id itemid,
+			item_number,
+			barcode_type,
+			barcode_indicator indicator,
+			location,
+			length,
+			disable_date,
+			routing_exist,
+			unique_check,
+			traceability,
+			seperator
+	  FROM mtl_operation_parts
+	  WHERE operation_id = #{opId}
+	  ORDER BY item_number asc
+	]]>      
+   </select>
+   
+   
+	<parameterMap id="insertOperationsParameters" type="map">
+		<parameter property="op"  	 		        jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="opdesc"    	        jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="site"          		jdbcType="NUMERIC" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="userid"     	 		jdbcType="NUMERIC" javaType="java.math.BigDecimal" mode="IN"/>
+ 		<parameter property="opid"           	 	jdbcType="INTEGER" javaType="java.lang.Integer" mode="OUT"/> 
+	</parameterMap>
+	<update id="insertOperations" statementType="CALLABLE"  parameterMap="insertOperationsParameters">
+	<![CDATA[
+		{call p_insert_operations(?, ?, ?, ?, ?)}
+	]]>
+	</update>
+
+	<parameterMap id="insertOperationPartsParameters" type="map">
+		<parameter property="opid"  	         	jdbcType="NUMERIC" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="itemid" 	           	jdbcType="NUMERIC" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="item_number"    	 	jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="barcode_type"    	    jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="indicator"    	     	jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="location"    	        jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="length"    	        jdbcType="NUMERIC" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="routing_exist"     	jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="unique_check"     	    jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="traceability"     	    jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="seperator"     	    jdbcType="NUMERIC" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="userid"     	        jdbcType="NUMERIC" javaType="java.math.BigDecimal" mode="IN"/>
+	</parameterMap>
+	<update id="insertOperationParts" statementType="CALLABLE"  parameterMap="insertOperationPartsParameters">
+	<![CDATA[
+		{call p_insert_operation_parts(?, ?, ?, ?, ?, ?, ?, null, ?, ?, ?, ?, ?)}
+	]]>
+	</update>
+	
+	<parameterMap id="updateOperationsParameters" type="map">
+		<parameter property="id"           	 	jdbcType="INTEGER" javaType="java.lang.Integer" mode="IN"/>
+		<parameter property="optype"  	        jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="opdesc"    	    jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="site"          	jdbcType="NUMERIC" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="userid"     	 	jdbcType="NUMERIC" javaType="java.math.BigDecimal" mode="IN"/>
+	</parameterMap>
+	<update id="updateOperations" statementType="CALLABLE"  parameterMap="updateOperationsParameters">
+	<![CDATA[
+		{call p_update_operations(?, ?, ?, ?, ?)}
+	]]>
+	</update>
+	
+	<parameterMap id="updateOperationPartsParameters" type="map">
+		<parameter property="opid"  	         jdbcType="NUMERIC" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="itemid"    	     jdbcType="NUMERIC" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="item_number"    	 jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="barcode_type"    	 jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="indicator"    	     jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="location"    	     jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="length"    	     jdbcType="NUMERIC" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="routing_exist"      jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="unique_check"     	 jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="traceability"     	 jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="seperator"     	 jdbcType="NUMERIC" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="old_itemid"     	 jdbcType="NUMERIC" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="userid"     	     jdbcType="NUMERIC" javaType="java.math.BigDecimal" mode="IN"/>
+	</parameterMap>
+	<update id="updateOperationParts" statementType="CALLABLE"  parameterMap="updateOperationPartsParameters">
+	<![CDATA[
+		{call p_update_operation_parts(?, ?, ?, ?, ?, ?, ?, null, ?, ?, ?, ?, ?, ?)}
+	]]>
+	</update>
+	
+	<parameterMap id="deleteOperationsParameters" type="map">
+		<parameter property="p_operation_id"    	        jdbcType="INTEGER" javaType="java.lang.Integer" mode="IN"/>
+	</parameterMap>
+	<update id="deleteOperations" statementType="CALLABLE"  parameterMap="deleteOperationsParameters">
+	<![CDATA[
+		{call p_delete_operations(?)}
+	]]>
+	</update>
+	
+	<parameterMap id="deleteOperationPartsParameters" type="map">
+		<parameter property="opid"    	    jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="itemid"    	        	jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+	</parameterMap>
+	<update id="deleteOperationParts" statementType="CALLABLE"  parameterMap="deleteOperationPartsParameters">
+	<![CDATA[
+		{call p_delete_operation_parts(?, ?)}
+	]]>
+	</update>
+	
+	<select id="getOperationType" parameterType="int" resultType="map">    
+      <![CDATA[
+   select operation_type 
+	from mtl_operations 
+	 where mfg_site_id = #{site}
+	 group by operation_type 
+	order by operation_type;
+      ]]>
+   </select>  
+   
+   	<parameterMap id="copyfromPackingParameters" type="map">
+		<parameter property="p_from_item_number"    	jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_to_item_number"       	jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_user_id"     	        jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="p_lang"              	    jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+	</parameterMap>
+	<update id="copyfromPacking" statementType="CALLABLE"  parameterMap="copyfromPackingParameters">
+	<![CDATA[
+		{call p_item_packing_copy(?, ?, ?, ?)}
+	]]>
+	</update>
+	
+	<parameterMap id="copyfromLabelParameters" type="map">
+		<parameter property="p_from_item_number"    	jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_to_item_number"       	jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_user_id"     	        jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="p_lang"              	    jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+	</parameterMap>
+	<update id="copyfromLabel" statementType="CALLABLE"  parameterMap="copyfromLabelParameters">
+	<![CDATA[
+		{call p_item_label_copy(?, ?, ?, ?)}
+	]]>
+	</update>
+	
+	
+</mapper>

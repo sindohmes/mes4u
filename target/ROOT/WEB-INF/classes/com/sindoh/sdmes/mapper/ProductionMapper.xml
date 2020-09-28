@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sindoh.sdmes.mapper.ProductionMapper">
+
+    <!-- 파일 생성 -->
+	<parameterMap id="createJobDispatchParameters" type="map">
+		<parameter property="line_name"  	         jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="lang"    	         	 jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="item_number"          	 jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="start_date"     	 	 jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="qty"     	 			 jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="userid"     	 		 jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="site"	     	 		 jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="dispatch_id"   	  	 jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+ 		<parameter property="result"     	      	 jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/> 
+		<parameter property="message"            	 jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+	</parameterMap>
+	
+	<update id="createJobDispatch" statementType="CALLABLE"  parameterMap="createJobDispatchParameters">
+	<![CDATA[
+		{call p_create_job_dispatch(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}
+	]]>
+	</update>
+	
+    <!-- 파일 생성 -->
+	<parameterMap id="createJobSerialNumbersParameters" type="map">
+		<parameter property="dispatch_id" 			 jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="lang"    	         	 jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="userid"     	 		 jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="fixed_prefix"        	 jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="fixed_prod"         	 jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+ 		<parameter property="result"     	      	 jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/> 
+		<parameter property="message"            	 jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+	</parameterMap>
+	
+	<update id="createJobSerialNumbers" statementType="CALLABLE"  parameterMap="createJobSerialNumbersParameters">
+	<![CDATA[
+		{call p_create_serialnumbers(?, ?, ?, ?, ?, ?, ?)}
+	]]>
+	</update>       
+
+    <!-- 파일 생성 -->
+	<parameterMap id="cancelJobSerialNumbersParameters" type="map">
+		<parameter property="dispatch_id" 			 jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="lang"    	         	 jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="userid"     	 		 jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+ 		<parameter property="result"     	      	 jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/> 
+		<parameter property="message"            	 jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+	</parameterMap>
+	
+	<update id="cancelJobSerialNumbers" statementType="CALLABLE"  parameterMap="cancelJobSerialNumbersParameters">
+	<![CDATA[
+		{call p_cancel_job_serial_numbers(?, ?, ?, ?, ?)}
+	]]>
+	</update>       
+
+    <!-- 파일 생성 -->
+	<parameterMap id="createJobDpOperationsParameters" type="map">
+		<parameter property="dispatch_id" 			 jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="lang"    	         	 jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="userid"     	 		 jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+ 		<parameter property="result"     	      	 jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/> 
+		<parameter property="message"            	 jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+	</parameterMap>
+	
+	<update id="createJobDpOperations" statementType="CALLABLE"  parameterMap="createJobDpOperationsParameters">
+	<![CDATA[
+		{call p_create_job_dp_operations(?, ?, ?, ?, ?)}
+	]]>
+	</update>     
+	
+	<!-- Get Serial Status -->
+	<parameterMap id="getSerialnumStatusParameters" type="map">
+		<parameter property="item"    	         	jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="serial"    	        jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+	</parameterMap>
+	
+	<select id="getSerialnumStatus" resultType="String"  parameterMap="getSerialnumStatusParameters">
+      <![CDATA[select f_get_serialnum_status(?, ?)]]>      
+	</select> 		  
+	       
+</mapper>

@@ -1,0 +1,51 @@
+/* Specific Button Hover */
+.ihover:hover {
+    color: #5cb6ff;
+}
+
+/* Box Card Common Margin */
+.box-card {
+    margin-bottom: 10px;
+}
+
+/* input required */
+.input-required-yellow>>> input {
+    background : #fcfc7e;
+} 
+
+/* scan result default */
+.resultbox>>> input {
+    background : #eff3ee;
+    font-weight: bold;
+}
+
+/* button default margin */
+.el-button {
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+.el-table {
+    width: 100%;
+}
+
+.el-table th {
+    background-color: #1F2D3D;
+    color: white;
+    text-align: center;
+}
+
+.customreadonly .el-input__inner:read-only {
+    background-color: #f0f0f0 !important;
+}
+
+.customfocus .el-input__inner:focus {
+    background-color: #f7f7ff;
+}
+
+.selectedRef {
+    float:right;
+    color:#149ac2;
+}

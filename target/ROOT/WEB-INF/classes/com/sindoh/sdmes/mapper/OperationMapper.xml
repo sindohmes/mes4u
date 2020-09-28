@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sindoh.sdmes.mapper.OperationMapper">
+
+    <!-- 파일 생성 -->
+   <select id="getPartStatus" resultType="map" parameterType="Integer">    
+      <![CDATA[
+   select mop.item_number part
+      ,mo.operation_desc description
+      ,mo.operation_id
+      ,mup.profile_value2 assy
+  from mtl_operations mo,    
+       mtl_operation_parts mop,
+       mes_user_profiles mup
+ where mup.mes_user_id = #{id}
+   and mup.profile_value = mo.operation_id::text
+   and mup.profile_value = mop.operation_id::text   
+   and mup.profile_name = 'OPERATION_ID'
+   and mup.recent_flag = 'Y'
+   and mup.profile_value3 is not null
+   order by mup.profile_value3]]>
+   </select>
+          
+   <select id="getOperationSettingList" resultType="map" parameterType="map">    
+      <![CDATA[
+   select jdo.*
+  from job_dispatch_operations jdo,
+       job_serial_numbers jsn
+ where jsn.serial_number = #{serial}
+   and jsn.item_number = #{item}
+   and jsn.dispatch_id = jdo.dispatch_id
+   and jdo.disable_date is null
+   and jdo.operation_type = #{operation}
+   and jdo.effective_date <= now()
+ order by jdo.operation_seq_num, dispatch_operation_id]]>
+   </select>   
+      
+   <select id="getInLineList" resultType="map" parameterType="map">    
+      <![CDATA[select  jdo.operation_seq_num operation_seq,
+				       jdo.assy_item_number,
+				       jdo.operation_id,
+				       jdo.operation_type,
+				       jdo.operation_desc
+				  from job_dispatch_operations jdo
+				 inner join job_serial_numbers jsn
+				    on jsn.dispatch_id = jdo.dispatch_id
+				 where jsn.serial_number = #{serial}
+				   and jsn.item_number =#{item}
+				   and jdo.operation_type = #{operation}
+				   and jdo.disable_date is null
+				   and jdo.effective_date <= now()
+				 order by jdo.operation_seq_num]]>      
+   </select>
+
+	<parameterMap id="getUserOperationParameters" type="map">
+		<parameter property="userid"  	         jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="item"    	         jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+ 		<parameter property="result"             jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/> 
+	</parameterMap>
+	
+	<update id="getUserOperation" statementType="CALLABLE"  parameterMap="getUserOperationParameters">
+	<![CDATA[
+		{call p_get_user_operation(?, ?, ?)}
+	]]>
+	</update>
+	    
+	<parameterMap id="createUserOperationParameters" type="map">
+		<parameter property="userid"  	         jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="seq"	  	         jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="opid"	  	         jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="item"    	         jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+	</parameterMap>
+	
+	<select id="createUserOperation" resultType="String"  parameterMap="createUserOperationParameters">
+	<![CDATA[
+		select p_create_user_operation(?, ?, ?, ?)
+	]]>
+	</select>
+
+	<!-- Recent Partscan Barcode -->
+	<parameterMap id="dispatchOpHisChkParameters" type="map">
+		<parameter property="opid"  	         	jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="lang"           		jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="item"    	         	jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="serial"    	        jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="result"     	 		jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+	</parameterMap>
+	
+	<select id="dispatchOpHisChk" resultType="String"  parameterMap="dispatchOpHisChkParameters">
+      <![CDATA[select p_job_dispatch_op_his_chk(?, ?, ?, ?)]]>      
+	</select> 	
+	
+	<!--  Create Partscan History -->
+	<parameterMap id="createTraceOpHistoryParameters" type="map">
+		<parameter property="item"    	         jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="lang"    	         jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="serial"   	         jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="partbarcode"        jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="opid"	  	         jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="userid"  	         jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+ 		<parameter property="result"           	 jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/> 
+		<parameter property="message"          	 jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+	</parameterMap>
+	
+	<update id="createTraceOpHistory" statementType="CALLABLE"  parameterMap="createTraceOpHistoryParameters">
+	<![CDATA[
+		{call p_create_trace_op_history(?, ?, ?, ?, ?, ?, ?, ?)}
+	]]>
+	</update>
+	  	    
+	<parameterMap id="checkAssyBarcodeInfoParameters" type="map">
+		<parameter property="p_barcode"  	         jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_lang"    	         jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="x_item_number"          jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+		<parameter property="x_serial_number"     	 jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+ 		<parameter property="x_result"           	 jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/> 
+		<parameter property="x_message"            	 jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+	</parameterMap>
+	
+	<update id="checkAssyBarcodeInfo" statementType="CALLABLE"  parameterMap="checkAssyBarcodeInfoParameters">
+	<![CDATA[
+		{call p_assy_barcode_check(?, ?, ?, ?, ?, ?)}
+	]]>
+	</update>       
+	
+	<!-- 공정내 검사 txn 생성 -->
+	<parameterMap id="createInspectionOperationParameters" type="map">
+		<parameter property="p_item_number"  	         jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_lang"    	             jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_serial_number"    	     jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_passfail"    	         jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_operation_id"    	     jdbcType="NUMERIC" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="p_user_id"    	             jdbcType="NUMERIC" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="p_op_chk_flag"    	         jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="x_result"                   jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+		<parameter property="x_message"     	         jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+	</parameterMap>
+
+	<update id="createInspectionOperation" statementType="CALLABLE"  parameterMap="createInspectionOperationParameters">
+	<![CDATA[
+		{call p_create_inspection_op(?, ?, ?, ?, ?, ?, ?, ?, ?)}
+	]]>
+	</update>   
+	
+	<!-- SOL - Operation History -->
+	<select id="getSolOpHistory" resultType="map" parameterType="map">    
+    <![CDATA[
+    	select h.dispatch_id,
+    		   h.line_name, 
+			   h.interface_wo_num,
+			   h.config_indicator,
+			   h.item_number,
+			   h.serial_number,
+			   h.time_stamp,
+			   h.recent_flag,
+			   h.comments
+		  from job_dispatch_op_histories_v h
+		 where h.time_stamp >= date_trunc('day', now())
+		   and h.operation_desc = #{operation}
+		   and h.operator_id = #{id}
+		 order by h.time_stamp desc, 
+		 		  h.history_id desc
+    ]]>      
+	</select>   	
+	
+	<!-- SOL - Scan Assy Barcode -->
+	<parameterMap id="createOpHistoryParameters" type="map">
+		<parameter property="p_barcode"  	         	jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_lang"    	         	jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_operation"		       	jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_user_id"    	         	jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="p_operation_chk"        	jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_previous_operation_chk"  jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_work_station"    		jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_comments"    	        jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="x_item_number"          	jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+		<parameter property="x_serial_number"     	 	jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+ 		<parameter property="x_result"           	 	jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/> 
+		<parameter property="x_message"            	 	jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+	</parameterMap>
+	
+	<update id="createOpHistory" statementType="CALLABLE"  parameterMap="createOpHistoryParameters">
+	<![CDATA[
+		{call p_create_op_history(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}
+	]]>
+	</update>    
+	
+	<!-- EOL - Scan Assy Barcode -->
+	<parameterMap id="createEolHistoryParameters" type="map">
+		<parameter property="p_barcode"  	         	jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_user_id"    	         	jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="p_operation"            	jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_insp_operation"        	jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_lang"    	         	jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="x_item_number"          	jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+		<parameter property="x_serial_number"     	 	jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+ 		<parameter property="x_result"           	 	jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/> 
+		<parameter property="x_message"            	 	jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+	</parameterMap>
+	
+	<update id="createEolHistory" statementType="CALLABLE"  parameterMap="createEolHistoryParameters">
+	<![CDATA[
+		{call p_create_eol_history(?, ?, ?, ?, ?, ?, ?, ?, ?)}
+	]]>
+	</update>    
+	
+	<select id="getPacking" parameterType="String" resultType="com.sindoh.sdmes.model.MtlPackingNumbersView">    
+    <![CDATA[
+    	SELECT packing_id as id,
+    		packing_number as packingNumber,
+    		content_number as contentNumber,
+    		item_number as item,
+    		packing_type as type,
+    		status, 
+    		packing_qty as targetCount
+    	FROM mtl_packing_numbers_v a
+		WHERE a.packing_number = #{packingNumber}
+		ORDER BY content_number ASC 
+    ]]>      
+	</select>   
+	   
+	<parameterMap id="insertPackingParameters" type="map">
+		<parameter property="scan_data"  	         	jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="site"    	        		jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="packing_number_in"       	jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="operation"    	        	jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="userlang"    	        	jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="user_id"        			jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="p_target_count"  			jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="OUT"/>
+		<parameter property="p_count"    				jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="OUT"/>
+		<parameter property="p_result"    	        	jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+		<parameter property="p_message"          		jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+		<parameter property="p_packing_number"     	 	jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+ 		<parameter property="p_packing_id"          	jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="OUT"/> 
+	</parameterMap>
+
+	<update id="insertPacking" statementType="CALLABLE"  parameterMap="insertPackingParameters">
+	<![CDATA[
+		{call p_movetag_insert(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}
+	]]>
+	</update>
+	
+	<parameterMap id="cancelPackingParameters" type="map">
+		<parameter property="packing_number"  		jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="user_id"    	        	jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="userlang"    	        jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_result"        			jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+		<parameter property="p_message"        			jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+	</parameterMap>
+
+	<update id="cancelPacking" statementType="CALLABLE"  parameterMap="cancelPackingParameters">
+	<![CDATA[
+		{call p_movetag_cancel(?, ?, ?, ?, ?)}
+	]]>
+	</update>
+	
+	<parameterMap id="printPackingParameters" type="map">
+		<parameter property="packing_id"  		jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="user_id"    	        	jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+		<parameter property="userlang"    	        jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_result"        			jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+		<parameter property="p_message"        			jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+	</parameterMap>
+
+	<update id="printPacking" statementType="CALLABLE"  parameterMap="printPackingParameters">
+	<![CDATA[
+		{call p_movetag_print(?, ?, ?, ?, ?)}
+	]]>
+	</update>
+	
+   <select id="getOpFailed" resultType="map" parameterType="map">    
+        <![CDATA[select jdoh.item_number,
+				       jdoh.serial_number,
+				       jdoh.passfail,
+				       jdoh.comments,
+				       to_char(jdoh.time_stamp, 'yyyy-mm-dd hh:mm:ss') time_stamp,
+				       jdoh.operation_desc,
+				       jdoh.user_name,
+					   jdoh.line_name,
+					   jdoh.product_family
+				  from job_dispatch_op_histories_v jdoh
+				 where operation_type = #{operation}
+				   and passfail = 'FAIL'
+				   and jdoh.recent_flag = 'Y'
+				   and item_number = #{item}
+				   and serial_number = #{serial}
+				 order by time_stamp desc]]>      
+   </select>   
+   
+   <select id="getDefectCodes" resultType="map" parameterType="map">    
+        <![CDATA[select defect_code_id, defect_code, code_level, defect_name, 
+				        parent_code_lv1, parent_code_lv2, parent_code_lv3, parent_code_lv4
+					from mtl_defect_codes
+				   where disable_date is null
+				     and (defect_name like #{defect, jdbcType=VARCHAR}||'%' or
+				          defect_code like #{defect, jdbcType=VARCHAR}||'%')
+				   order by defect_code]]>   
+   </select>   
+   
+   <select id="getRepairCodes" resultType="map" parameterType="map">    
+        <![CDATA[select repair_code_id, repair_code, code_level, repair_name,
+	                    parent_code_lv1, parent_code_lv2, parent_code_lv3, parent_code_lv4
+				   from mtl_repair_codes
+				  where disable_date is null
+				    and (repair_name like #{repair, jdbcType=VARCHAR}||'%' or
+				         repair_code like #{repair, jdbcType=VARCHAR}||'%')
+				    order by repair_code]]>
+   </select>
+	   
+  <parameterMap id="checkBoxBarcodeInfoParameters" type="map">
+		<parameter property="p_barcode"  	         jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_lang"    	         jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="x_box_barcode_type"     jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+		<parameter property="x_item_number"          jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+		<parameter property="x_serial_number"     	 jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+ 		<parameter property="x_box_chk_result"     	 jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/> 
+		<parameter property="x_box_chk_message"   	 jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+  </parameterMap>
+	
+  <update id="checkBoxBarcodeInfo" statementType="CALLABLE"  parameterMap="checkBoxBarcodeInfoParameters">
+	<![CDATA[
+		{call p_box_barcode_check(?, ?, ?, ?, ?, ?, ?)}
+	]]>
+  </update>
+   
+  <parameterMap id="createRepairOperationParameters" type="map">
+		<parameter property="p_item_number"  	         jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_repair_history_id"        jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_qa_history_id"  	         jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_lang"      	             jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_defect_type"  	         jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_degree"     	             jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_fault"     	             jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_serial_number"            jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_defect_code"  	         jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_repair_code"     	     jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_repair_item"   	         jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_item_barcode"   	         jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_subsystem_code"	         jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_pagecount"   	         jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_comments"    	         jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_inspection" 	             jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="p_user_id" 	             jdbcType="DECIMAL" javaType="java.math.BigDecimal" mode="IN"/>
+ 		<parameter property="x_repair_result"        	 jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/> 
+		<parameter property="x_repair_message"   	     jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+  </parameterMap>
+	
+  <update id="createRepairOperation" statementType="CALLABLE"  parameterMap="createRepairOperationParameters">
+	<![CDATA[
+		{call p_create_repair_operation_ins(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}
+	]]>
+  </update>
+	  	  
+	
+</mapper>

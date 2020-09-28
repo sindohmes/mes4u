@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sindoh.sdmes.mapper.SystemMapper">
+
+  <select id="callProc" resultType="String" parameterType="map">
+	<![CDATA[select ${proc}]]>
+	<foreach collection="params" item="arr" open="(" close=")" separator=",">
+	#{arr}
+	</foreach>
+  </select>
+
+  <select id="serialList" resultType="map" parameterType="map">
+	<![CDATA[
+	select item_number, serial_number
+	  from job_serial_numbers
+	 where item_number = #{p_item_number}
+	   and serial_number between #{p_from_sn} and #{p_to_sn}	
+	]]>
+  </select>
+  
+</mapper>
