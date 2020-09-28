@@ -3,7 +3,7 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">MES You</h3>
+        <h3 class="title">{{ title }}</h3>
       </div>
 
       <el-form-item prop="username">
@@ -46,7 +46,9 @@
 </template>
 
 <script>
+import defaultSettings from '@/settings'
 import { validUsername } from '@/utils/validate'
+const { title } = defaultSettings
 
 export default {
   name: 'Login',
@@ -76,7 +78,8 @@ export default {
       },
       loading: false,
       passwordType: 'password',
-      redirect: undefined
+      redirect: undefined,
+      title: title
     }
   },
   watch: {

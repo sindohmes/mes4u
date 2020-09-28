@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.sindoh.sdmes.SDMESApplicationTests
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 19.87 s - in com.sindoh.sdmes.SDMESApplicationTests
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 19.434 s - in com.sindoh.sdmes.SDMESApplicationTests
