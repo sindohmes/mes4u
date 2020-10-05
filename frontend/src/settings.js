@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: 'MES-U',
+  title: 'MES 4U',
 
   /**
    * @type {boolean} true | false

@@ -37,7 +37,7 @@ Printing info contains below.
 + Used or not in the job order
 + Used or not serial numbers
 
-Printout Operations in the MES-U are completion and packing operations, so you can register to print in the operations. 
+Printout Operations in the mes4u are completion and packing operations, so you can register to print in the operations. 
 
 Operation names refer to parameter.js in the Vue.js front-end. this values can be modified.
 

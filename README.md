@@ -1,4 +1,4 @@
-# MES-U
+# mes4u
 
 <p align="center">
   <a href="https://github.com/vuejs/vue">
@@ -19,7 +19,7 @@ Eng / [한글](./README.ko-KR.md)
 
 ## Introduce
 
-MES-U is a web-based open source Manufacturing Execution System (MES) developed by ©Sindoh.
+mes4u is a web-based open source Manufacturing Execution System (MES) developed by ©Sindoh.
 
 The system is developed based on functions of our previous MES used on our manufacturing sites and know-how gained from it. We share the program as a open source software for those who interests in MES. The current version (v1) provides core functions and master data needed on the manufacturing sites. We'll improve the program by adding more enhanced functions for manufacturing sites such as inventory and material management.
 
@@ -51,7 +51,7 @@ To install and use MES, you need the followings:
   + [node.js](https://nodejs.org/) 
   + [git](https://git-scm.com/)
 
-The use of MES-U is not limited to manufacturing sites only. If you want to customize it, you need to modify the source codes. To run and test the program, we recommend using the following programs.
+The use of mes4u is not limited to manufacturing sites only. If you want to customize it, you need to modify the source codes. To run and test the program, we recommend using the following programs.
  
 - Recommended servers and tools
   + Spring Tool Suite 4

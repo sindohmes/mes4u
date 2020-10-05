@@ -36,7 +36,7 @@ After competing user and DB registration, download the schema creation script an
 
 ## III. Java Spring Framework Setting
 
-MES-U is an open-source software built using Spring Framework. It is based on Maven project
+mes4u is an open-source software built using Spring Framework. It is based on Maven project
 
 For Running, default Java setting is jre 1.8 but need to change jdk 1.8. Change procedures are below.
 
@@ -108,7 +108,7 @@ If you want to add more libraries, just add them into 'pom.xml'. After that, you
 
 ## IV. Vue.js Setting
 
-Front-end Framework in MES-U is based on Vue.js and use npm for the installation and management. If you are unable to use npm, you must install node.js instead using the download link below.
+Front-end Framework in mes4u is based on Vue.js and use npm for the installation and management. If you are unable to use npm, you must install node.js instead using the download link below.
 
 [Node.js Downlaod Link](https://nodejs.org/ko/)
 
@@ -142,14 +142,14 @@ Vue.js environment directory is organized as below.
 + .env.development: Base URL files to connect Back-end API in dev environment
 + .env.production: Base URL files to connect Back-end API in deployment environment
 
-MES-U Vue.js uses the UI and Template below.
+mes4u Vue.js uses the UI and Template below.
 
 + [Element UI: MIT License](https://element.eleme.io/#/en-US)
 + [vue-element-admin: MIT License](https://github.com/PanJiaChen/vue-element-admin)
 
-## V. MES-U execution
+## V. mes4u execution
 
-MES-U can be executed by Spring Boot App of STS4 (Spring Tool Suite) or execute 'ROOT.war' file in 'target' directory.
+mes4u can be executed by Spring Boot App of STS4 (Spring Tool Suite) or execute 'ROOT.war' file in 'target' directory.
 
 ```
 java -jar ROOT.war
@@ -159,7 +159,7 @@ Default setup URL is http://localhost:8080. If you want to use another server, 
 
 ![Login Page](./images/login_page.png)
 
-After PostgreSQL installation and DB connection is completed, you can see the login page in Web. Log into MES-U using the default user name and password below.
+After PostgreSQL installation and DB connection is completed, you can see the login page in Web. Log into mes4u using the default user name and password below.
 
 + ID: administrator
 + PW: administrator

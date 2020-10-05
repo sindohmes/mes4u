@@ -4,7 +4,7 @@ Eng / [한글](./features.ko-KR.md)
 
 ## 1. Management Area and Processes
 
-MES-U v1 provides core functions used on manufacturing execution systems. The core functions is classified into 4 categories as below.
+mes4u v1 provides core functions used on manufacturing execution systems. The core functions is classified into 4 categories as below.
 
 + System Management: User registration and related system, log information
 + Master Data Management: Master data of manufacturing

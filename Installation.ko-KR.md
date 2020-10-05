@@ -38,7 +38,7 @@ ALTER DATABASE sdmes SET search_path TO sdmes;
 
 ## III. Java Spring Framework Setting
 
-MES-U는 오픈소스로 제공되므로, Java 언어의 Spring Framework에서 가동됩니다. 
+mes4u는 오픈소스로 제공되므로, Java 언어의 Spring Framework에서 가동됩니다. 
 
 구동 환경은 Maven Project 기반으로 구성되어 있으며, Spring Framework에서 실행하기 위해서는 기본 설정이 jre 1.8로 되어 있는데, jdk 1.8을 설치해주신 후 변경을 해 주셔야 합니다.
 변경 방법은 다음과 같습니다.
@@ -111,7 +111,7 @@ Spring Boot - Maven Project에서 사용할 라이브러리를 나타내며, 현
 
 ## IV. Vue.js Setting
 
-MES-U의 Front-end Framework는 Vue.js를 사용하며, 설치 및 관리는 npm을 사용합니다. npm을 사용할 수 없는 경우에는 node.js를 설치해야 하며, 아래 링크를 통해서 다운로드를 할 수 있습니다.
+mes4u의 Front-end Framework는 Vue.js를 사용하며, 설치 및 관리는 npm을 사용합니다. npm을 사용할 수 없는 경우에는 node.js를 설치해야 하며, 아래 링크를 통해서 다운로드를 할 수 있습니다.
 
 [Node.js 다운로드 링크](https://nodejs.org/ko/)
 
@@ -145,14 +145,14 @@ Vue.js 환경은 다음의 구조를 따릅니다.
 + .env.development: 개발 환경에서 Back-end API에 연결하기 위한 Base URL 지정 파일
 + .env.production: 배포 환경에서 Back-end API에 연결하기 위한 Base URL 지정 파일
 
-MES-U의 Vue.js는 다음 UI 및 Template을 사용합니다.
+mes4u의 Vue.js는 다음 UI 및 Template을 사용합니다.
 
 + [Element UI: MIT License](https://element.eleme.io/#/en-US)
 + [vue-element-admin: MIT License](https://github.com/PanJiaChen/vue-element-admin)
 
-## V. MES-U 실행
+## V. mes4u 실행
 
-MES-U 실행은 STS4(Spring Tool Suite)의 Spring Boot App을 통해서 실행하거나, 혹은 target 디렉토리의 ROOT.war 파일을 실행합니다.
+mes4u 실행은 STS4(Spring Tool Suite)의 Spring Boot App을 통해서 실행하거나, 혹은 target 디렉토리의 ROOT.war 파일을 실행합니다.
 
 ```
 java -jar ROOT.war
