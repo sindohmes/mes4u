@@ -7,7 +7,7 @@
 소스코드 다운로드는 아래와 같습니다.
 
 ```
-git clone git@github.com:sindohmes/MESTEST
+git clone git@github.com:sindohmes/mes4u
 ```
 
 ## II. PostgreSQL Setup
