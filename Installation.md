@@ -7,7 +7,7 @@ Eng / [한글](./Installation.ko-KR.md)
 Below is downloading source code.
 
 ```
-git clone git@github.com:sindohmes/MESTEST
+git clone git@github.com:sindohmes/mes4u
 ```
 
 ## II. PostgreSQL Setup
