@@ -30,7 +30,7 @@ ALTER DATABASE sdmes SET search_path TO sdmes;
 
 You can use your own user and DB names other than 'mesuser' and 'sdmes'. In this case, however, DB Schema creation script and 'application.properties' file in Spring Framework should be modified accordingly.
 
-After competing user and DB registration, download the schema creation script and run it in PostgreSQL. This script includes essential INSERT script for making system data including Table, View, Sequence, Function and Index.
+After competing user and DB registration, download the schema creation script and run it in PostgreSQL. This script includes essential INSERT script for making system data including Table, View, Sequence, Function and Index. When you execute the script, please connect by 'mesuser' account.
 
 [PostgreSQL Schema Creation Script Download Link](./pgschemascript.sql)
 
