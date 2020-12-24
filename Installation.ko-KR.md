@@ -32,7 +32,7 @@ ALTER DATABASE sdmes SET search_path TO sdmes;
 
 명령어 실행 시 상기 코드의 'mesuser' 및 'sdmes'는 사용자가 직접 수정해서 관리할 수 있으나, DB Schema 생성 스크립트 및 Spring의 application.properties 파일도 이에 맞춰서 수정을 해야 하니 주의 바랍니다.
 
-사용자 및 DB 생성이 완료되었으면, 다음은 Schema 생성 스크립트를 다운로드 받으신 후, PostgreSQL에서 실행합니다. 스크립트에는 Table, View, Sequence, Function, Index 등을 포함하여 필수 데이터 Insert 구문을 포함합니다.
+사용자 및 DB 생성이 완료되었으면, 다음은 Schema 생성 스크립트를 다운로드 받으신 후, PostgreSQL에서 실행합니다. 스크립트에는 Table, View, Sequence, Function, Index 등을 포함하여 필수 데이터 Insert 구문을 포함합니다. PostgreSQL에서 실행할 때에는 처음에 접속했던 postgres 계정이 아닌, 위에서 생성한 mesuser 계정으로 실행해야 합니다.
 
 [PostgreSQL Schema Creation Script 다운로드 링크](./pgschemascript.sql)
 
